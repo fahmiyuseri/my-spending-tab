@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { DatePickerDialog } from 'react-native-datepicker-dialog'
+import { Firebase } from "../api/config.js";
 
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
@@ -21,6 +22,14 @@ export default class LinksScreen extends React.Component {
   };
 
 
+  handleAddItem = () => {
+    console.log("hahaha");
+    const database = Firebase.database().ref('users/' + 'fahmi/items').push().set({
+          amount: this.state.amount,
+          desc: this.state.desc,
+          date: this.state.date.toLocaleDateString()
+    });
+  }
   state = { amount: '', desc: '', date: new Date() }
   render() {
     return (
@@ -63,7 +72,8 @@ export default class LinksScreen extends React.Component {
         </View>
         <TouchableOpacity style={styles.tabBarInfoContainer}
         onPress={() => {
-          Alert.alert(JSON.stringify(this.state));
+          {this.handleAddItem()}
+         //Alert.alert(JSON.stringify(this.state));
         }}
         >
 
