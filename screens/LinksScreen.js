@@ -1,4 +1,6 @@
 import React from 'react';
+import { ImagePicker, Permissions } from 'expo';
+
 import {
   ScrollView,
   StyleSheet,
@@ -10,7 +12,10 @@ import {
   DatePickerIOS,
   DatePickerAndroid,
   DatePicker,
-  Alert
+  Alert,
+  Button,
+  Image
+
 } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { DatePickerDialog } from 'react-native-datepicker-dialog'
@@ -27,10 +32,12 @@ export default class LinksScreen extends React.Component {
     const database = Firebase.database().ref('users/' + 'fahmi/items').push().set({
           amount: this.state.amount,
           desc: this.state.desc,
-          date: this.state.date.toLocaleDateString()
+          date: this.state.date.toLocaleDateString(),
+          img : this.state.image
     });
   }
-  state = { amount: '', desc: '', date: new Date() }
+  state = { amount: '', desc: '', date: new Date() , image: null }
+
   render() {
     return (
       <View style={{backgroundColor:'red',flex:1}}>
@@ -70,6 +77,37 @@ export default class LinksScreen extends React.Component {
               </TouchableOpacity>
           }
         </View>
+        <Button
+             title="Pick an image from camera roll"
+             onPress={async () => {
+               // Ask for permission
+               const { status } = await Permissions.askAsync(
+                 Permissions.CAMERA_ROLL
+               );
+               if (status === "granted") {
+                 // Do camera stuff
+                 let result = await ImagePicker.launchImageLibraryAsync({
+                   allowsEditing: true,
+                   aspect: [4, 3]
+                 });
+
+                  console.log(result);
+
+                  if (!result.cancelled) {
+                   this.setState({ image: result.uri });
+                 }
+               } else {
+                 // Permission denied
+                 throw new Error("Camera permission not granted");
+               }
+             }}
+           />
+           {this.state.image && (
+             <Image
+               source={{ uri: this.state.image }}
+               style={{ width: 200, height: 200 }}
+             />
+           )}
         <TouchableOpacity style={styles.tabBarInfoContainer}
         onPress={() => {
           {this.handleAddItem()}
