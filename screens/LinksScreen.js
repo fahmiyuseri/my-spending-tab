@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImagePicker, Permissions } from 'expo';
-
+import uuid from "uuid";
 import {
   ScrollView,
   StyleSheet,
@@ -37,7 +37,33 @@ export default class LinksScreen extends React.Component {
     });
   }
   state = { amount: '', desc: '', date: new Date() , image: null }
+  uploadImageAsync = async uri => {
+    // Why are we using XMLHttpRequest? See:
+    // https://github.com/expo/expo/issues/2402#issuecomment-443726662
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function(e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
 
+     const ref = Firebase.storage()
+      .ref()
+      .child(uuid.v4());
+    const snapshot = await ref.put(blob);
+
+     // We're done with the blob, close and release it
+    blob.close();
+
+     return await snapshot.ref.getDownloadURL();
+  };
   render() {
     return (
       <View style={{backgroundColor:'red',flex:1}}>
@@ -94,7 +120,13 @@ export default class LinksScreen extends React.Component {
                   console.log(result);
 
                   if (!result.cancelled) {
-                   this.setState({ image: result.uri });
+                   // Uploading part
+         try {
+          const imageURL = await this.uploadImageAsync(result.uri);
+          this.setState({ image: imageURL});
+        } catch (err) {
+          console.error(err);
+        }
                  }
                } else {
                  // Permission denied

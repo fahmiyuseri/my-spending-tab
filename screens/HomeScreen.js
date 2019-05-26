@@ -5,7 +5,8 @@ import {
   ScrollView,
   Text,
   FlatList,
-  Platform
+  Platform,
+  Image
 } from "react-native";
 import { Firebase } from "../api/config.js";
 
@@ -18,6 +19,8 @@ class Row extends React.Component {
       <View style={styles.cardRow}>
         <Text>{desc}</Text>
         <Text>RM {price}</Text>
+        <Image style={{ width: 40, height: 40 }} source={{ uri: image }} />
+
       </View>
     );
   }
@@ -85,6 +88,8 @@ export default class HomeScreen extends React.Component {
                 <View style={styles.cardRow}>
                   <Text>{item.desc}</Text>
                   <Text>RM {JSON.stringify(item.amount)}</Text>
+                  <Image style={{ width: 40, height: 40 }} source={ {uri:item.img }} />
+
                 </View>
               </View>
             }/>
