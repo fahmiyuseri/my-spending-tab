@@ -42,6 +42,9 @@ LinksStack.navigationOptions = {
 const SettingsStack = createStackNavigator({
   Settings: SettingsScreen,
 });
+const AboutStack = createStackNavigator({
+  Abouts : SettingsScreen,
+});
 
 SettingsStack.navigationOptions = {
   tabBarLabel: 'Settings',
@@ -53,8 +56,18 @@ SettingsStack.navigationOptions = {
   ),
 };
 
+SettingsStack.navigationOptions = {
+  tabBarLabel: 'About',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-settings' : 'md-settings'}
+    />
+  ),
+};
 export default createBottomTabNavigator({
   HomeStack,
   LinksStack,
   SettingsStack,
+  AboutStack
 });
